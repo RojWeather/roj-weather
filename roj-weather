@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Roj Weather</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #000;
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      text-align: center;
+      max-width: 700px;
+      padding: 40px;
+    }
+
+    .sun {
+      width: 220px;
+      height: 220px;
+      margin: 0 auto 30px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffeb3b 60%, #fbc02d 100%);
+      box-shadow: 0 0 60px #ffeb3b;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+
+    p {
+      opacity: 0.85;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="sun"></div>
+    <h1>Roj Weather</h1>
+    <p>Kurdish cities weather & exchange rates</p>
+    <p>Coming soon 🌤️</p>
+  </div>
+</body>
+</html>
