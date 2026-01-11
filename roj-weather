@@ -1,55 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Roj Weather</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: #000;
-      color: #fff;
-      font-family: Arial, Helvetica, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .container {
-      text-align: center;
-      max-width: 700px;
-      padding: 40px;
-    }
-
-    .sun {
-      width: 220px;
-      height: 220px;
-      margin: 0 auto 30px;
-      border-radius: 50%;
-      background: radial-gradient(circle, #ffeb3b 60%, #fbc02d 100%);
-      box-shadow: 0 0 60px #ffeb3b;
-    }
-
-    h1 {
-      font-size: 3rem;
-      margin-bottom: 10px;
-    }
-
-    p {
-      opacity: 0.85;
-      font-size: 1.2rem;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>Roj Weather</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: #000;
+    color: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  .container {
+    text-align: center;
+    max-width: 1000px;
+    padding: 40px;
+  }
+  .sun {
+    width: 220px;
+    height: 220px;
+    margin: 0 auto 30px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffeb3b 60%, #fbc02d 100%);
+    box-shadow: 0 0 60px #ffeb3b;
+  }
+  h1 { font-size: 3rem; margin-bottom: 10px; }
+  h2,h3 { margin: 20px 0 10px; }
+  p { opacity: 0.85; font-size: 1.1rem; }
+  .card { border: 1px solid #fff; padding: 10px 20px; border-radius: 10px; min-width: 120px; margin:5px; display:inline-block; text-align:center;}
+  select { margin: 20px 0; padding: 5px 10px; font-size: 1rem; border-radius: 5px; }
+</style>
 </head>
-
 <body>
-  <div class="container">
-    <div class="sun"></div>
-    <h1>Roj Weather</h1>
-    <p>Kurdish cities weather & exchange rates</p>
-    <p>Coming soon 🌤️</p>
-  </div>
+<div class="container">
+  <div class="sun"></div>
+  <h1 id="site-title">Roj Weather</h1>
+  <select id="language">
+    <option value="en">English</option>
+    <option value="tr">Türkçe</option>
+    <option value="ku">Kurdî (Kurmancî)</option>
+    <option value="de">Deutsch</option>
+  </select>
+
+  <h2 id="weather-title">Kurdish Cities Weather</h2>
+  <div id="weather"></div>
+
+  <h2 id="rates-title">Currency & Gold Rates</h2>
+  <div id="rates"></div>
+</div>
+
+<script>
+const langData = {
+  en: {weather:"Weather", rates:"Currency & Gold Rates"},
+  tr: {weather:"Hava Durumu", rates:"Döviz ve Altın"},
+  ku: {weather:"Hewadarî", rates:"Derman û Altûn"},
+  de: {weather:"Wetter", rates:"Wechselkurse & Gold"}
+};
+
+// Tüm şehirler (demo verilerle)
+const citiesData = [
+  {name_en:"Diyarbakır",name_tr:"Diyarbakır",name_ku:"Amed",name_de:"Diyarbakir", weather:"Sunny", temp:25},
+  {name_en:"Van",name_tr:"Van",name_ku:"Wan",name_de:"Van", weather:"Sunny", temp:23},
+  {name_en:"Mardin",name_tr:"Mardin",name_ku:"Mêrdîn",name_de:"Mardin", weather:"Partly Cloudy", temp:24},
+  {name_en:"Şanlıurfa",name_tr:"Şanlıurfa",name_ku:"Riha",name_de:"Sanliurfa", weather:"Cloudy", temp:28},
+  {name_en:"Batman",name_tr:"Batman",name_ku:"Batman",name_de:"Batman", weather:"Sunny", temp:26},
+  {name_en:"Siirt",name_tr:"Siirt",name_ku:"Sêrt",name_de:"Siirt", weather:"Rainy", temp:22},
+  {name_en:"Şırnak",name_tr:"Şırnak",name_ku:"Şirnex",name_de:"Şırnak", weather:"Cloudy", temp:21},
+  {name_en:"Hakkâri",name_tr:"Hakkâri",name_ku:"Colê",name_de:"Hakkari", weather:"Sunny", temp:23},
+  {name_en:"Ağrı",name_tr:"Ağrı",name_ku:"Agirî",name_de:"Agri", weather:"Cloudy", temp:19},
+  {name_en:"Iğdır",name_tr:"Iğdır",name_ku:"Iğdır",name_de:"Igdir", weather:"Sunny", temp:20},
+  {name_en:"Muş",name_tr:"Muş",name_ku:"Mûş",name_de:"Mush", weather:"Rainy", temp:18},
+  {name_en:"Bitlis",name_tr:"Bitlis",name_ku:"Bedlîs",name_de:"Bitlis", weather:"Cloudy", temp:17},
+  {name_en:"Bingöl",name_tr:"Bingöl",name_ku:"Çewlîg",name_de:"Bingol", weather:"Sunny", temp:22},
+  {name_en:"Tunceli",name_tr:"Tunceli",name_ku:"Dersim",name_de:"Tunceli", weather:"Rainy", temp:16},
+  {name_en:"Kars",name_tr:"Kars",name_ku:"Kars",name_de:"Kars", weather:"Cloudy", temp:15},
+  {name_en:"Erzurum",name_tr:"Erzurum",name_ku:"Erzurum",name_de:"Erzurum", weather:"Sunny", temp:18},
+  {name_en:"Elazığ",name_tr:"Elazığ",name_ku:"Elazîz",name_de:"Elazig", weather:"Cloudy", temp:21},
+  {name_en:"Adıyaman",name_tr:"Adıyaman",name_ku:"Adiyaman",name_de:"Adiyaman", weather:"Sunny", temp:23},
+  {name_en:"Erbil",name_tr:"Erbil",name_ku:"Hewlêr",name_de:"Erbil", weather:"Sunny", temp:27},
+  {name_en:"Süleymaniye",name_tr:"Süleymaniye",name_ku:"Silêmanî",name_de:"Sulaimani", weather:"Cloudy", temp:25},
+  {name_en:"Duhok",name_tr:"Duhok",name_ku:"Dihok",name_de:"Duhok", weather:"Sunny", temp:24},
+  {name_en:"Zaho",name_tr:"Zaho",name_ku:"Zaxo",name_de:"Zaho", weather:"Sunny", temp:22},
+  {name_en:"Halepçe",name_tr:"Halepçe",name_ku:"Helebce",name_de:"Halabja", weather:"Cloudy", temp:23},
+  {name_en:"Kerkük",name_tr:"Kerkük",name_ku:"Kerkûk",name_de:"Kirkuk", weather:"Sunny", temp:26},
+  {name_en:"Kalar",name_tr:"Kalar",name_ku:"Kalar",name_de:"Kalar", weather:"Partly Cloudy", temp:25},
+  {name_en:"Ranya",name_tr:"Ranya",name_ku:"Ranya",name_de:"Ranya", weather:"Sunny", temp:24},
+  {name_en:"Çemçemal",name_tr:"Çemçemal",name_ku:"Çemçemal",name_de:"Chemchemal", weather:"Sunny", temp:23},
+  {name_en:"Amedi",name_tr:"Amedi",name_ku:"Amedi",name_de:"Amedi", weather:"Cloudy", temp:22},
+  {name_en:"Mahabad",name_tr:"Mahabad",name_ku:"Mahabad",name_de:"Mahabad", weather:"Sunny", temp:21},
+  {name_en:"Sanandaj",name_tr:"Sanandaj",name_ku:"Sine",name_de:"Sanandaj", weather:"Cloudy", temp:20},
+  {name_en:"Kermanshah",name_tr:"Kermanshah",name_ku:"Kirmanşah",name_de:"Kermanshah", weather:"Sunny", temp:22},
+  {name_en:"Bukan",name_tr:"Bukan",name_ku:"Bukan",name_de:"Bukan", weather:"Sunny", temp:21},
+  {name_en:"Saqqez",name_tr:"Saqqez",name_ku:"Saqqez",name_de:"Saqqez", weather:"Cloudy", temp:20},
+  {name_en:"Marivan",name_tr:"Marivan",name_ku:"Marîvan",name_de:"Marivan", weather:"Sunny", temp:21},
+  {name_en:"Paveh",name_tr:"Paveh",name_ku:"Paveh",name_de:"Paveh", weather:"Cloudy", temp:20},
+  {name_en:"Ilam",name_tr:"Ilam",name_ku:"Ilam",name_de:"Ilam", weather:"Sunny", temp:22},
+  {name_en:"Sardasht",name_tr:"Sardasht",name_ku:"Sardasht",name_de:"Sardasht", weather:"Cloudy", temp:21},
+  {name_en:"Oshnavieh",name_tr:"Oshnavieh",name_ku:"Oshnavieh",name_de:"Oshnavieh", weather:"Sunny", temp:20},
+  {name_en:"Qamishlo",name_tr:"Kamışlı",name_ku:"Qamişlo",name_de:"Qamishlo", weather:"Sunny", temp:23},
+  {name_en:"Kobani",name_tr:"Ayn el-Arab",name_ku:"Kobani",name_de:"Kobani", weather:"Cloudy", temp:22},
+  {name_en:"Afrin",name_tr:"Afrin",name_ku:"Efrîn",name_de:"Afrin", weather:"Sunny", temp:21},
+  {name_en:"Amûdê",name_tr:"Amude",name_ku:"Amûdê",name_de:"Amude", weather:"Cloudy", temp:22},
+  {name_en:"Derik",name_tr:"Al-Malikiyah",name_ku:"Derik",name_de:"Derik", weather:"Sunny", temp:21},
+  {name_en:"Serêkaniyê",name_tr:"Ras al-Ayn",name_ku:"Serêkaniyê",name_de:"Serêkaniyê", weather:"Cloudy", temp:20},
+  {name_en:"Aparan",name_tr:"Aparan",name_ku:"Aparan",name_de:"Aparan", weather:"Sunny", temp:19},
+  {name_en:"Talın",name_tr:"Talın",name_ku:"Talın",name_de:"Talın", weather:"Sunny", temp:20},
+  {name_en:"Laçın",name_tr:"Laçın",name_ku:"Laçın",name_de:"Lachin", weather:"Cloudy", temp:19},
+  {name_en:"Kelbecer",name_tr:"Kelbecer",name_ku:"Kelbecer",name_de:"Kalbajar", weather:"Sunny", temp:20},
+  {name_en:"Kubadlı",name_tr:"Kubadlı",name_ku:"Kubadlı",name_de:"Kubadli", weather:"Cloudy", temp:19},
+  {name_en:"Berlin",name_tr:"Berlin",name_ku:"Berlin",name_de:"Berlin", weather:"Sunny", temp:5},
+  {name_en:"Köln",name_tr:"Köln",name_ku:"Köln",name_de:"Köln", weather:"Cloudy", temp:7},
+  {name_en:"Hamburg",name_tr:"Hamburg",name_ku:"Hamburg",name_de:"Hamburg", weather:"Sunny", temp:6},
+  {name_en:"Essen",name_tr:"Essen",name_ku:"Essen",name_de:"Essen", weather:"Cloudy", temp:7},
+  {name_en:"Düsseldorf",name_tr:"Düsseldorf",name_ku:"Düsseldorf",name_de:"Düsseldorf", weather:"Sunny", temp:6},
+  {name_en:"Paris",name_tr:"Paris",name_ku:"Paris",name_de:"Paris", weather:"Cloudy", temp:10},
+  {name_en:"Marseille",name_tr:"Marseille",name_ku:"Marseille",name_de:"Marseille", weather:"Sunny", temp:12},
+  {name_en:"Stockholm",name_tr:"Stockholm",name_ku:"Stockholm",name_de:"Stockholm", weather:"Cloudy", temp:-2},
+  {name_en:"Göteborg",name_tr:"Göteborg",name_ku:"Göteborg",name_de:"Gothenburg", weather:"Sunny", temp:0},
+  {name_en:"Rotterdam",name_tr:"Rotterdam",name_ku:"Rotterdam",name_de:"Rotterdam", weather:"Cloudy", temp:5},
+  {name_en:"Amsterdam",name_tr:"Amsterdam",name_ku:"Amsterdam",name_de:"Amsterdam", weather:"Sunny", temp:6},
+  {name_en:"London",name_tr:"London",name_ku:"London",name_de:"London", weather:"Cloudy", temp:8},
+  {name_en:"Moskova",name_tr:"Moskova",name_ku:"Moskva",name_de:"Moscow", weather:"Sunny", temp:-5},
+  {name_en:"Krasnodar",name_tr:"Krasnodar",name_ku:"Krasnodar",name_de:"Krasnodar", weather:"Cloudy", temp:2}
+];
+
+const weatherDiv = document.getElementById("weather");
+const ratesDiv = document.getElementById("rates");
+const languageSelect = document.getElementById("language");
+const weatherTitle = document.getElementById("weather-title");
+const ratesTitle = document.getElementById("rates-title");
+
+function renderWeather(lang){
+  weatherDiv.innerHTML = "";
+  citiesData.forEach(c => {
+    const name = c[`name_${lang}`] || c.name_en;
+    const el = document.createElement("div");
+    el.className = "card";
+    el.innerHTML = `<h4>${name}</h4><p>${c.weather}</p><p>${c.temp} °C</p>`;
+    weatherDiv.appendChild(el);
+  });
+}
+
+function renderRates(){
+  ratesDiv.innerHTML = "";
+  fetch('https://api.exchangerate.host/latest?base=TRY&symbols=USD,EUR,GBP')
+    .then(res => res.json())
+    .then(data => {
+      ["USD","EUR","GBP"].forEach(cur => {
+        const el = document.createElement("div");
+        el.className = "card";
+        el.innerHTML = `<h4>${cur}</h4><p>1 TRY = ${data.rates[cur].toFixed(2)} ${cur}</p>`;
+        ratesDiv.appendChild(el);
+      });
+    }).catch(err=>console.log(err));
+}
+
+// İlk render
+renderWeather("en");
+renderRates();
+
+// Dil değiştirildiğinde
+languageSelect.addEventListener("change",()=>{
+  const lang = languageSelect.value;
+  weatherTitle.innerText = langData[lang].weather;
+  ratesTitle.innerText = langData[lang].rates;
+  renderWeather(lang);
+});
+</script>
 </body>
 </html>
