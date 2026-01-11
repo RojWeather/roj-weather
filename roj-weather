@@ -51,126 +51,228 @@
   <div id="weather"></div>
 
   <h2 id="rates-title">Currency & Gold Rates</h2>
-  <div id="rates"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Roj Weather</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {margin:0; min-height:100vh; background:#000; color:#fff; font-family:Arial,sans-serif; text-align:center;}
+.container {max-width:1200px; margin:auto; padding:20px;}
+.sun {width:220px; height:220px; margin:0 auto 20px; border-radius:50%; background: radial-gradient(circle,#ffeb3b 60%,#fbc02d 100%);}
+h1 {font-size:3rem;}
+select {padding:5px 10px; margin:15px;}
+.card {display:inline-block; background:rgba(255,255,255,0.1); border-radius:10px; padding:10px 15px; margin:5px; min-width:140px;}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="sun"></div>
+<h1 id="site-title">Roj Weather</h1>
+<select id="language">
+  <option value="en">English</option>
+  <option value="tr">Türkçe</option>
+  <option value="ku">Kurmancî</option>
+  <option value="de">Deutsch</option>
+</select>
+
+<h2 id="weather-title">Kurdish Cities Weather</h2>
+<div id="weather"></div>
+
+<h2 id="rates-title">Currency & Gold Rates</h2>
+<div id="rates"></div>
 </div>
 
 <script>
-const langData = {
-  en: {weather:"Weather", rates:"Currency & Gold Rates"},
-  tr: {weather:"Hava Durumu", rates:"Döviz ve Altın"},
-  ku: {weather:"Hewadarî", rates:"Derman û Altûn"},
-  de: {weather:"Wetter", rates:"Wechselkurse & Gold"}
+// 🔹 Şehir isimleri eşleme tablosu
+const cityNames = {
+"Diyarbakır": {ku:"Amed", tr:"Diyarbakır", en:"Diyarbakır", de:"Diyarbakır"},
+"Van": {ku:"Wan", tr:"Van", en:"Van", de:"Van"},
+"Mardin": {ku:"Mêrdîn", tr:"Mardin", en:"Mardin", de:"Mardin"},
+"Şanlıurfa": {ku:"Riha", tr:"Şanlıurfa", en:"Sanliurfa", de:"Sanliurfa"},
+"Batman": {ku:"Batman", tr:"Batman", en:"Batman", de:"Batman"},
+"Siirt": {ku:"Siîrt", tr:"Siirt", en:"Siirt", de:"Siirt"},
+"Şırnak": {ku:"Şirnex", tr:"Şırnak", en:"Sirnak", de:"Sirnak"},
+"Hakkâri": {ku:"Colemêrg", tr:"Hakkâri", en:"Hakkari", de:"Hakkari"},
+"Ağrı": {ku:"Agirî", tr:"Ağrı", en:"Agri", de:"Agri"},
+"Iğdır": {ku:"Iğdır", tr:"Iğdır", en:"Igdir", de:"Igdir"},
+"Muş": {ku:"Mûş", tr:"Muş", en:"Mus", de:"Mus"},
+"Bitlis": {ku:"Bêtlîs", tr:"Bitlis", en:"Bitlis", de:"Bitlis"},
+"Bingöl": {ku:"Çolig", tr:"Bingöl", en:"Bingol", de:"Bingol"},
+"Tunceli": {ku:"Dersim", tr:"Tunceli", en:"Tunceli", de:"Tunceli"},
+"Kars": {ku:"Kars", tr:"Kars", en:"Kars", de:"Kars"},
+"Erzurum": {ku:"Erzurûm", tr:"Erzurum", en:"Erzurum", de:"Erzurum"},
+"Elazığ": {ku:"Elazîz", tr:"Elazığ", en:"Elazig", de:"Elazig"},
+"Adıyaman": {ku:"Adîyaman", tr:"Adıyaman", en:"Adiyaman", de:"Adiyaman"},
+"Erbil": {ku:"Hewlêr", tr:"Erbil", en:"Erbil", de:"Erbil"},
+"Süleymaniye": {ku:"Silêmanî", tr:"Süleymaniye", en:"Sulaimaniyah", de:"Süleymaniye"},
+"Duhok": {ku:"Dihok", tr:"Duhok", en:"Duhok", de:"Duhok"},
+"Zaho": {ku:"Zaxo", tr:"Zaho", en:"Zaho", de:"Zaho"},
+"Halepçe": {ku:"Helepçe", tr:"Halepçe", en:"Halabja", de:"Halepçe"},
+"Kerkük": {ku:"Kerkûk", tr:"Kerkük", en:"Kirkuk", de:"Kerkük"},
+"Kalar": {ku:"Kelar", tr:"Kalar", en:"Kalar", de:"Kalar"},
+"Ranya": {ku:"Ranya", tr:"Ranya", en:"Ranya", de:"Ranya"},
+"Çemçemal": {ku:"Çemçemal", tr:"Çemçemal", en:"Chemchemal", de:"Chemchemal"},
+"Amedi": {ku:"Amedi", tr:"Amedi", en:"Amedi", de:"Amedi"},
+"Mahabad": {ku:"Mahabad", tr:"Mahabad", en:"Mahabad", de:"Mahabad"},
+"Sanandaj": {ku:"Sine", tr:"Sanandaj", en:"Sanandaj", de:"Sanandaj"},
+"Kermanshah": {ku:"Kirmanşah", tr:"Kermanshah", en:"Kermanshah", de:"Kermanshah"},
+"Bukan": {ku:"Bukan", tr:"Bukan", en:"Bukan", de:"Bukan"},
+"Saqqez": {ku:"Saqqez", tr:"Saqqez", en:"Saqqez", de:"Saqqez"},
+"Marivan": {ku:"Marivan", tr:"Marivan", en:"Marivan", de:"Marivan"},
+"Paveh": {ku:"Paveh", tr:"Paveh", en:"Paveh", de:"Paveh"},
+"Ilam": {ku:"Ilam", tr:"Ilam", en:"Ilam", de:"Ilam"},
+"Sardasht": {ku:"Sardasht", tr:"Sardasht", en:"Sardasht", de:"Sardasht"},
+"Oshnavieh": {ku:"Oshnavieh", tr:"Oshnavieh", en:"Oshnavieh", de:"Oshnavieh"},
+"Qamishlo": {ku:"Kamışlı", tr:"Qamishlo", en:"Qamishlo", de:"Qamishlo"},
+"Kobani": {ku:"Ayn el-Arab", tr:"Kobani", en:"Kobani", de:"Kobani"},
+"Afrin": {ku:"Afrin", tr:"Afrin", en:"Afrin", de:"Afrin"},
+"Amûdê": {ku:"Amûdê", tr:"Amude", en:"Amude", de:"Amude"},
+"Derik": {ku:"Al-Malikiyah", tr:"Derik", en:"Derik", de:"Derik"},
+"Serêkaniyê": {ku:"Ras al-Ayn", tr:"Serêkaniyê", en:"Serêkaniyê", de:"Serêkaniyê"},
+"Aparan": {ku:"Aparan", tr:"Aparan", en:"Aparan", de:"Aparan"},
+"Talın": {ku:"Talın", tr:"Talın", en:"Talın", de:"Talın"},
+"Laçın": {ku:"Laçın", tr:"Laçın", en:"Lacin", de:"Laçın"},
+"Kelbecer": {ku:"Kelbecer", tr:"Kelbecer", en:"Kelbecer", de:"Kelbecer"},
+"Kubadlı": {ku:"Kubadlı", tr:"Kubadlı", en:"Kubadlı", de:"Kubadlı"},
+"Berlin": {ku:"Berlin", tr:"Berlin", en:"Berlin", de:"Berlin"},
+"Köln": {ku:"Köln", tr:"Köln", en:"Cologne", de:"Köln"},
+"Hamburg": {ku:"Hamburg", tr:"Hamburg", en:"Hamburg", de:"Hamburg"},
+"Essen": {ku:"Essen", tr:"Essen", en:"Essen", de:"Essen"},
+"Düsseldorf": {ku:"Düsseldorf", tr:"Düsseldorf", en:"Düsseldorf", de:"Düsseldorf"},
+"Paris": {ku:"Paris", tr:"Paris", en:"Paris", de:"Paris"},
+"Marseille": {ku:"Marseille", tr:"Marseille", en:"Marseille", de:"Marseille"},
+"Stockholm": {ku:"Stockholm", tr:"Stockholm", en:"Stockholm", de:"Stockholm"},
+"Göteborg": {ku:"Göteborg", tr:"Göteborg", en:"Gothenburg", de:"Göteborg"},
+"Rotterdam": {ku:"Rotterdam", tr:"Rotterdam", en:"Rotterdam", de:"Rotterdam"},
+"Amsterdam": {ku:"Amsterdam", tr:"Amsterdam", en:"Amsterdam", de:"Amsterdam"},
+"London": {ku:"London", tr:"Londra", en:"London", de:"London"},
+"Moskova": {ku:"Moskova", tr:"Moskova", en:"Moscow", de:"Moskova"},
+"Krasnodar": {ku:"Krasnodar", tr:"Krasnodar", en:"Krasnodar", de:"Krasnodar"}
 };
 
-// Tüm şehirler (demo verilerle)
-const citiesData = [
-  {name_en:"Diyarbakır",name_tr:"Diyarbakır",name_ku:"Amed",name_de:"Diyarbakir", weather:"Sunny", temp:25},
-  {name_en:"Van",name_tr:"Van",name_ku:"Wan",name_de:"Van", weather:"Sunny", temp:23},
-  {name_en:"Mardin",name_tr:"Mardin",name_ku:"Mêrdîn",name_de:"Mardin", weather:"Partly Cloudy", temp:24},
-  {name_en:"Şanlıurfa",name_tr:"Şanlıurfa",name_ku:"Riha",name_de:"Sanliurfa", weather:"Cloudy", temp:28},
-  {name_en:"Batman",name_tr:"Batman",name_ku:"Batman",name_de:"Batman", weather:"Sunny", temp:26},
-  {name_en:"Siirt",name_tr:"Siirt",name_ku:"Sêrt",name_de:"Siirt", weather:"Rainy", temp:22},
-  {name_en:"Şırnak",name_tr:"Şırnak",name_ku:"Şirnex",name_de:"Şırnak", weather:"Cloudy", temp:21},
-  {name_en:"Hakkâri",name_tr:"Hakkâri",name_ku:"Colê",name_de:"Hakkari", weather:"Sunny", temp:23},
-  {name_en:"Ağrı",name_tr:"Ağrı",name_ku:"Agirî",name_de:"Agri", weather:"Cloudy", temp:19},
-  {name_en:"Iğdır",name_tr:"Iğdır",name_ku:"Iğdır",name_de:"Igdir", weather:"Sunny", temp:20},
-  {name_en:"Muş",name_tr:"Muş",name_ku:"Mûş",name_de:"Mush", weather:"Rainy", temp:18},
-  {name_en:"Bitlis",name_tr:"Bitlis",name_ku:"Bedlîs",name_de:"Bitlis", weather:"Cloudy", temp:17},
-  {name_en:"Bingöl",name_tr:"Bingöl",name_ku:"Çewlîg",name_de:"Bingol", weather:"Sunny", temp:22},
-  {name_en:"Tunceli",name_tr:"Tunceli",name_ku:"Dersim",name_de:"Tunceli", weather:"Rainy", temp:16},
-  {name_en:"Kars",name_tr:"Kars",name_ku:"Kars",name_de:"Kars", weather:"Cloudy", temp:15},
-  {name_en:"Erzurum",name_tr:"Erzurum",name_ku:"Erzurum",name_de:"Erzurum", weather:"Sunny", temp:18},
-  {name_en:"Elazığ",name_tr:"Elazığ",name_ku:"Elazîz",name_de:"Elazig", weather:"Cloudy", temp:21},
-  {name_en:"Adıyaman",name_tr:"Adıyaman",name_ku:"Adiyaman",name_de:"Adiyaman", weather:"Sunny", temp:23},
-  {name_en:"Erbil",name_tr:"Erbil",name_ku:"Hewlêr",name_de:"Erbil", weather:"Sunny", temp:27},
-  {name_en:"Süleymaniye",name_tr:"Süleymaniye",name_ku:"Silêmanî",name_de:"Sulaimani", weather:"Cloudy", temp:25},
-  {name_en:"Duhok",name_tr:"Duhok",name_ku:"Dihok",name_de:"Duhok", weather:"Sunny", temp:24},
-  {name_en:"Zaho",name_tr:"Zaho",name_ku:"Zaxo",name_de:"Zaho", weather:"Sunny", temp:22},
-  {name_en:"Halepçe",name_tr:"Halepçe",name_ku:"Helebce",name_de:"Halabja", weather:"Cloudy", temp:23},
-  {name_en:"Kerkük",name_tr:"Kerkük",name_ku:"Kerkûk",name_de:"Kirkuk", weather:"Sunny", temp:26},
-  {name_en:"Kalar",name_tr:"Kalar",name_ku:"Kalar",name_de:"Kalar", weather:"Partly Cloudy", temp:25},
-  {name_en:"Ranya",name_tr:"Ranya",name_ku:"Ranya",name_de:"Ranya", weather:"Sunny", temp:24},
-  {name_en:"Çemçemal",name_tr:"Çemçemal",name_ku:"Çemçemal",name_de:"Chemchemal", weather:"Sunny", temp:23},
-  {name_en:"Amedi",name_tr:"Amedi",name_ku:"Amedi",name_de:"Amedi", weather:"Cloudy", temp:22},
-  {name_en:"Mahabad",name_tr:"Mahabad",name_ku:"Mahabad",name_de:"Mahabad", weather:"Sunny", temp:21},
-  {name_en:"Sanandaj",name_tr:"Sanandaj",name_ku:"Sine",name_de:"Sanandaj", weather:"Cloudy", temp:20},
-  {name_en:"Kermanshah",name_tr:"Kermanshah",name_ku:"Kirmanşah",name_de:"Kermanshah", weather:"Sunny", temp:22},
-  {name_en:"Bukan",name_tr:"Bukan",name_ku:"Bukan",name_de:"Bukan", weather:"Sunny", temp:21},
-  {name_en:"Saqqez",name_tr:"Saqqez",name_ku:"Saqqez",name_de:"Saqqez", weather:"Cloudy", temp:20},
-  {name_en:"Marivan",name_tr:"Marivan",name_ku:"Marîvan",name_de:"Marivan", weather:"Sunny", temp:21},
-  {name_en:"Paveh",name_tr:"Paveh",name_ku:"Paveh",name_de:"Paveh", weather:"Cloudy", temp:20},
-  {name_en:"Ilam",name_tr:"Ilam",name_ku:"Ilam",name_de:"Ilam", weather:"Sunny", temp:22},
-  {name_en:"Sardasht",name_tr:"Sardasht",name_ku:"Sardasht",name_de:"Sardasht", weather:"Cloudy", temp:21},
-  {name_en:"Oshnavieh",name_tr:"Oshnavieh",name_ku:"Oshnavieh",name_de:"Oshnavieh", weather:"Sunny", temp:20},
-  {name_en:"Qamishlo",name_tr:"Kamışlı",name_ku:"Qamişlo",name_de:"Qamishlo", weather:"Sunny", temp:23},
-  {name_en:"Kobani",name_tr:"Ayn el-Arab",name_ku:"Kobani",name_de:"Kobani", weather:"Cloudy", temp:22},
-  {name_en:"Afrin",name_tr:"Afrin",name_ku:"Efrîn",name_de:"Afrin", weather:"Sunny", temp:21},
-  {name_en:"Amûdê",name_tr:"Amude",name_ku:"Amûdê",name_de:"Amude", weather:"Cloudy", temp:22},
-  {name_en:"Derik",name_tr:"Al-Malikiyah",name_ku:"Derik",name_de:"Derik", weather:"Sunny", temp:21},
-  {name_en:"Serêkaniyê",name_tr:"Ras al-Ayn",name_ku:"Serêkaniyê",name_de:"Serêkaniyê", weather:"Cloudy", temp:20},
-  {name_en:"Aparan",name_tr:"Aparan",name_ku:"Aparan",name_de:"Aparan", weather:"Sunny", temp:19},
-  {name_en:"Talın",name_tr:"Talın",name_ku:"Talın",name_de:"Talın", weather:"Sunny", temp:20},
-  {name_en:"Laçın",name_tr:"Laçın",name_ku:"Laçın",name_de:"Lachin", weather:"Cloudy", temp:19},
-  {name_en:"Kelbecer",name_tr:"Kelbecer",name_ku:"Kelbecer",name_de:"Kalbajar", weather:"Sunny", temp:20},
-  {name_en:"Kubadlı",name_tr:"Kubadlı",name_ku:"Kubadlı",name_de:"Kubadli", weather:"Cloudy", temp:19},
-  {name_en:"Berlin",name_tr:"Berlin",name_ku:"Berlin",name_de:"Berlin", weather:"Sunny", temp:5},
-  {name_en:"Köln",name_tr:"Köln",name_ku:"Köln",name_de:"Köln", weather:"Cloudy", temp:7},
-  {name_en:"Hamburg",name_tr:"Hamburg",name_ku:"Hamburg",name_de:"Hamburg", weather:"Sunny", temp:6},
-  {name_en:"Essen",name_tr:"Essen",name_ku:"Essen",name_de:"Essen", weather:"Cloudy", temp:7},
-  {name_en:"Düsseldorf",name_tr:"Düsseldorf",name_ku:"Düsseldorf",name_de:"Düsseldorf", weather:"Sunny", temp:6},
-  {name_en:"Paris",name_tr:"Paris",name_ku:"Paris",name_de:"Paris", weather:"Cloudy", temp:10},
-  {name_en:"Marseille",name_tr:"Marseille",name_ku:"Marseille",name_de:"Marseille", weather:"Sunny", temp:12},
-  {name_en:"Stockholm",name_tr:"Stockholm",name_ku:"Stockholm",name_de:"Stockholm", weather:"Cloudy", temp:-2},
-  {name_en:"Göteborg",name_tr:"Göteborg",name_ku:"Göteborg",name_de:"Gothenburg", weather:"Sunny", temp:0},
-  {name_en:"Rotterdam",name_tr:"Rotterdam",name_ku:"Rotterdam",name_de:"Rotterdam", weather:"Cloudy", temp:5},
-  {name_en:"Amsterdam",name_tr:"Amsterdam",name_ku:"Amsterdam",name_de:"Amsterdam", weather:"Sunny", temp:6},
-  {name_en:"London",name_tr:"London",name_ku:"London",name_de:"London", weather:"Cloudy", temp:8},
-  {name_en:"Moskova",name_tr:"Moskova",name_ku:"Moskva",name_de:"Moscow", weather:"Sunny", temp:-5},
-  {name_en:"Krasnodar",name_tr:"Krasnodar",name_ku:"Krasnodar",name_de:"Krasnodar", weather:"Cloudy", temp:2}
+// 🔹 Dil seçimi
+let currentLang = "en";
+document.getElementById("language").addEventListener("change", (e)=> {
+  currentLang = e.target.value;
+  renderWeather();
+});
+
+// 🔹 Şehir koordinatları
+const citiesCoords = [
+{lat:37.9144,lon:40.2306,name:"Diyarbakır"},
+{lat:38.4942,lon:43.3800,name:"Van"},
+{lat:37.3120,lon:40.7347,name:"Mardin"},
+{lat:37.1674,lon:38.7955,name:"Şanlıurfa"},
+{lat:37.8870,lon:41.1320,name:"Batman"},
+{lat:37.9333,lon:41.9500,name:"Siirt"},
+{lat:37.5142,lon:42.4539,name:"Şırnak"},
+{lat:37.5747,lon:43.7400,name:"Hakkâri"},
+{lat:39.7191,lon:43.0503,name:"Ağrı"},
+{lat:39.8883,lon:44.0164,name:"Iğdır"},
+{lat:38.7466,lon:41.4955,name:"Muş"},
+{lat:38.3990,lon:42.1112,name:"Bitlis"},
+{lat:38.8841,lon:40.4939,name:"Bingöl"},
+{lat:39.1090,lon:39.5453,name:"Tunceli"},
+{lat:40.6013,lon:43.0977,name:"Kars"},
+{lat:39.9000,lon:41.2700,name:"Erzurum"},
+{lat:38.6820,lon:39.2220,name:"Elazığ"},
+{lat:37.7648,lon:38.2766,name:"Adıyaman"},
+{lat:36.1911,lon:44.0094,name:"Erbil"},
+{lat:35.5606,lon:45.4339,name:"Süleymaniye"},
+{lat:36.8672,lon:42.9886,name:"Duhok"},
+{lat:36.1500,lon:42.6833,name:"Zaho"},
+{lat:35.2000,lon:45.2167,name:"Halepçe"},
+{lat:35.4681,lon:44.3928,name:"Kerkük"},
+{lat:35.5250,lon:45.4500,name:"Kalar"},
+{lat:35.5000,lon:45.8000,name:"Ranya"},
+{lat:35.7833,lon:44.8333,name:"Çemçemal"},
+{lat:36.5167,lon:44.6333,name:"Amedi"},
+{lat:36.7679,lon:45.7250,name:"Mahabad"},
+{lat:35.3100,lon:46.9989,name:"Sanandaj"},
+{lat:34.3142,lon:47.0650,name:"Kermanshah"},
+{lat:36.5236,lon:45.2064,name:"Bukan"},
+{lat:36.1667,lon:46.2500,name:"Saqqez"},
+{lat:35.5000,lon:46.1833,name:"Marivan"},
+{lat:34.9833,lon:46.3833,name:"Paveh"},
+{lat:33.6361,lon:46.4228,name:"Ilam"},
+{lat:36.9333,lon:45.4833,name:"Sardasht"},
+{lat:37.0400,lon:45.0200,name:"Oshnavieh"},
+{lat:37.0667,lon:41.2167,name:"Qamishlo"},
+{lat:36.8778,lon:38.5733,name:"Kobani"},
+{lat:36.8917,lon:36.8850,name:"Afrin"},
+{lat:36.6000,lon:38.9000,name:"Amûdê"},
+{lat:37.0100,lon:41.4000,name:"Derik"},
+{lat:36.8800,lon:39.0000,name:"Serêkaniyê"},
+{lat:40.1333,lon:44.3833,name:"Aparan"},
+{lat:39.7500,lon:46.3333,name:"Talın"},
+{lat:39.7500,lon:46.5000,name:"Laçın"},
+{lat:40.3000,lon:46.3500,name:"Kelbecer"},
+{lat:39.3000,lon:46.4500,name:"Kubadlı"},
+{lat:52.5200,lon:13.4050,name:"Berlin"},
+{lat:50.9375,lon:6.9603,name:"Köln"},
+{lat:53.5511,lon:9.9937,name:"Hamburg"},
+{lat:51.4500,lon:7.0167,name:"Essen"},
+{lat:51.2277,lon:6.7735,name:"Düsseldorf"},
+{lat:48.8566,lon:2.3522,name:"Paris"},
+{lat:43.2965,lon:5.3698,name:"Marseille"},
+{lat:59.3293,lon:18.0686,name:"Stockholm"},
+{lat:57.7089,lon:11.9746,name:"Göteborg"},
+{lat:51.9244,lon:4.4777,name:"Rotterdam"},
+{lat:52.3676,lon:4.9041,name:"Amsterdam"},
+{lat:51.5074,lon:-0.1278,name:"London"},
+{lat:55.7558,lon:37.6173,name:"Moskova"},
+{lat:45.0355,lon:39.1108,name:"Krasnodar"}
 ];
 
-const weatherDiv = document.getElementById("weather");
-const ratesDiv = document.getElementById("rates");
-const languageSelect = document.getElementById("language");
-const weatherTitle = document.getElementById("weather-title");
-const ratesTitle = document.getElementById("rates-title");
-
-function renderWeather(lang){
-  weatherDiv.innerHTML = "";
-  citiesData.forEach(c => {
-    const name = c[`name_${lang}`] || c.name_en;
-    const el = document.createElement("div");
-    el.className = "card";
-    el.innerHTML = `<h4>${name}</h4><p>${c.weather}</p><p>${c.temp} °C</p>`;
-    weatherDiv.appendChild(el);
-  });
+// 🔹 Hava durumu çekme fonksiyonu
+async function fetchWeather() {
+  const weatherDiv = document.getElementById("weather");
+  weatherDiv.innerHTML = "Loading...";
+  
+  let html = "";
+  for(const city of citiesCoords){
+    // Open-Meteo API örnek URL (tarih ve timezone ayarlayabilirsin)
+    let url = `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current_weather=true&timezone=auto`;
+    
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      const cw = data.current_weather;
+      html += `<div class="card"><h3>${cityNames[city.name][currentLang]}</h3>
+      <p>Temp: ${cw.temperature}°C</p>
+      <p>Wind: ${cw.windspeed} km/h</p>
+      <p>Weather code: ${cw.weathercode}</p></div>`;
+    } catch(err){
+      html += `<div class="card"><h3>${cityNames[city.name][currentLang]}</h3><p>Error fetching data</p></div>`;
+    }
+  }
+  weatherDiv.innerHTML = html;
 }
 
-function renderRates(){
-  ratesDiv.innerHTML = "";
-  fetch('https://api.exchangerate.host/latest?base=TRY&symbols=USD,EUR,GBP')
-    .then(res => res.json())
-    .then(data => {
-      ["USD","EUR","GBP"].forEach(cur => {
-        const el = document.createElement("div");
-        el.className = "card";
-        el.innerHTML = `<h4>${cur}</h4><p>1 TRY = ${data.rates[cur].toFixed(2)} ${cur}</p>`;
-        ratesDiv.appendChild(el);
-      });
-    }).catch(err=>console.log(err));
+// 🔹 Döviz çekme (exchangerate.host)
+async function fetchRates(){
+  const ratesDiv = document.getElementById("rates");
+  try {
+    const res = await fetch("https://api.exchangerate.host/latest?base=TRY&symbols=USD,EUR,GBP");
+    const data = await res.json();
+    ratesDiv.innerHTML = `<div class="card">USD: ${data.rates.USD.toFixed(2)}</div>
+                          <div class="card">EUR: ${data.rates.EUR.toFixed(2)}</div>
+                          <div class="card">GBP: ${data.rates.GBP.toFixed(2)}</div>`;
+  } catch(err){
+    ratesDiv.innerHTML = `<div class="card">Error fetching rates</div>`;
+  }
 }
 
-// İlk render
-renderWeather("en");
-renderRates();
+// 🔹 Render
+function renderWeather(){
+  fetchWeather();
+  fetchRates();
+}
 
-// Dil değiştirildiğinde
-languageSelect.addEventListener("change",()=>{
-  const lang = languageSelect.value;
-  weatherTitle.innerText = langData[lang].weather;
-  ratesTitle.innerText = langData[lang].rates;
-  renderWeather(lang);
-});
+// İlk yükleme
+renderWeather();
 </script>
 </body>
 </html>
